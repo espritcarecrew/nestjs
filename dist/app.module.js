@@ -10,43 +10,16 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const User_module_1 = require("./User/User.module");
-const mongoose_1 = require("@nestjs/mongoose");
-const jwt_1 = require("@nestjs/jwt");
-const config_1 = require("@nestjs/config");
-const roles_module_1 = require("./roles/roles.module");
-const config_2 = require("./config/config");
+const prediction_service_1 = require("./prediction/prediction.service");
+const prediction_controller_1 = require("./prediction/prediction.controller");
 let AppModule = class AppModule {
 };
-AppModule = __decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-                cache: true,
-                load: [config_2.default],
-            }),
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: async (config) => ({
-                    secret: config.get('jwt.secret'),
-                }),
-                global: true,
-                inject: [config_1.ConfigService],
-            }),
-            mongoose_1.MongooseModule.forRootAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: async (config) => ({
-                    uri: config.get('database.connectionString'),
-                }),
-                inject: [config_1.ConfigService],
-            }),
-            User_module_1.AuthModule,
-            roles_module_1.RolesModule,
-        ],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [],
+        controllers: [app_controller_1.AppController, prediction_controller_1.PredictionController],
+        providers: [app_service_1.AppService, prediction_service_1.PredictionService],
     })
 ], AppModule);
-exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map
