@@ -34,9 +34,9 @@ let MailService = class MailService {
         await this.transporter.sendMail(mailOptions);
     }
 };
-MailService = __decorate([
+exports.MailService = MailService;
+exports.MailService = MailService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], MailService);
-exports.MailService = MailService;
 //# sourceMappingURL=mail.service.js.map

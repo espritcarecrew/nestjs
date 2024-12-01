@@ -13,9 +13,9 @@ exports.ForgotPasswordDto = void 0;
 const class_validator_1 = require("class-validator");
 class ForgotPasswordDto {
 }
+exports.ForgotPasswordDto = ForgotPasswordDto;
 __decorate([
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], ForgotPasswordDto.prototype, "email", void 0);
-exports.ForgotPasswordDto = ForgotPasswordDto;
 //# sourceMappingURL=forgot-password.dto.js.map

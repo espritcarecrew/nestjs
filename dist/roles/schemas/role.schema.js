@@ -28,6 +28,7 @@ Permission = __decorate([
 ], Permission);
 let Role = class Role {
 };
+exports.Role = Role;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -36,9 +37,8 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true, type: [Permission] }),
     __metadata("design:type", Array)
 ], Role.prototype, "permissions", void 0);
-Role = __decorate([
+exports.Role = Role = __decorate([
     (0, mongoose_1.Schema)()
 ], Role);
-exports.Role = Role;
 exports.RoleSchema = mongoose_1.SchemaFactory.createForClass(Role);
 //# sourceMappingURL=role.schema.js.map

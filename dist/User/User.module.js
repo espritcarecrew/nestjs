@@ -18,7 +18,8 @@ const mail_service_1 = require("../services/mail.service");
 const roles_module_1 = require("../roles/roles.module");
 let AuthModule = class AuthModule {
 };
-AuthModule = __decorate([
+exports.AuthModule = AuthModule;
+exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
             roles_module_1.RolesModule,
@@ -42,5 +43,4 @@ AuthModule = __decorate([
         exports: [User_service_1.AuthService],
     })
 ], AuthModule);
-exports.AuthModule = AuthModule;
 //# sourceMappingURL=User.module.js.map

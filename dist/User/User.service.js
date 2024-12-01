@@ -62,7 +62,10 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const tokens = await this.generateUserTokens(user._id);
-        return Object.assign(Object.assign({}, tokens), { userId: user._id });
+        return {
+            ...tokens,
+            userId: user._id,
+        };
     }
     async changePassword(userId, oldPassword, newPassword) {
         const user = await this.UserModel.findById(userId);
@@ -141,7 +144,8 @@ let AuthService = class AuthService {
         return role.permissions;
     }
 };
-AuthService = __decorate([
+exports.AuthService = AuthService;
+exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __param(1, (0, mongoose_1.InjectModel)(refresh_token_schema_1.RefreshToken.name)),
@@ -153,5 +157,4 @@ AuthService = __decorate([
         mail_service_1.MailService,
         roles_service_1.RolesService])
 ], AuthService);
-exports.AuthService = AuthService;
 //# sourceMappingURL=User.service.js.map

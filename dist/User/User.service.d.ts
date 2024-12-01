@@ -23,7 +23,7 @@ export declare class AuthService {
     login(credentials: LoginDto): Promise<{
         userId: unknown;
         accessToken: string;
-        refreshToken: any;
+        refreshToken: string;
     }>;
     changePassword(userId: any, oldPassword: string, newPassword: string): Promise<void>;
     forgotPassword(email: string): Promise<{
@@ -32,11 +32,11 @@ export declare class AuthService {
     resetPassword(newPassword: string, resetToken: string): Promise<void>;
     refreshTokens(refreshToken: string): Promise<{
         accessToken: string;
-        refreshToken: any;
+        refreshToken: string;
     }>;
     generateUserTokens(userId: any): Promise<{
         accessToken: string;
-        refreshToken: any;
+        refreshToken: string;
     }>;
     storeRefreshToken(token: string, userId: string): Promise<void>;
     getUserPermissions(userId: string): Promise<{

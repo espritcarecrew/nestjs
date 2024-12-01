@@ -13,6 +13,7 @@ exports.ChangePasswordDto = void 0;
 const class_validator_1 = require("class-validator");
 class ChangePasswordDto {
 }
+exports.ChangePasswordDto = ChangePasswordDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -23,5 +24,4 @@ __decorate([
     (0, class_validator_1.Matches)(/^(?=.*[0-9])/, { message: 'Password must contain at least one number' }),
     __metadata("design:type", String)
 ], ChangePasswordDto.prototype, "newPassword", void 0);
-exports.ChangePasswordDto = ChangePasswordDto;
 //# sourceMappingURL=change-password.dto.js.map

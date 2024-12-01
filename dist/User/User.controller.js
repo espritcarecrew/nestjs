@@ -45,6 +45,7 @@ let AuthController = class AuthController {
         return this.authService.resetPassword(resetPasswordDto.newPassword, resetPasswordDto.resetToken);
     }
 };
+exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('signup'),
     __param(0, (0, common_1.Body)()),
@@ -89,9 +90,8 @@ __decorate([
     __metadata("design:paramtypes", [reset_password_dto_1.ResetPasswordDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
-AuthController = __decorate([
+exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [User_service_1.AuthService])
 ], AuthController);
-exports.AuthController = AuthController;
 //# sourceMappingURL=User.controller.js.map

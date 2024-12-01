@@ -14,6 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let RefreshToken = class RefreshToken extends mongoose_2.Document {
 };
+exports.RefreshToken = RefreshToken;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -26,9 +27,8 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
 ], RefreshToken.prototype, "expiryDate", void 0);
-RefreshToken = __decorate([
+exports.RefreshToken = RefreshToken = __decorate([
     (0, mongoose_1.Schema)({ versionKey: false, timestamps: true })
 ], RefreshToken);
-exports.RefreshToken = RefreshToken;
 exports.RefreshTokenSchema = mongoose_1.SchemaFactory.createForClass(RefreshToken);
 //# sourceMappingURL=refresh-token.schema.js.map

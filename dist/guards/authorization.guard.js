@@ -46,9 +46,9 @@ let AuthorizationGuard = class AuthorizationGuard {
         return true;
     }
 };
-AuthorizationGuard = __decorate([
+exports.AuthorizationGuard = AuthorizationGuard;
+exports.AuthorizationGuard = AuthorizationGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [core_1.Reflector, User_service_1.AuthService])
 ], AuthorizationGuard);
-exports.AuthorizationGuard = AuthorizationGuard;
 //# sourceMappingURL=authorization.guard.js.map
