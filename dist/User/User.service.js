@@ -36,46 +36,65 @@ let AuthService = class AuthService {
     }
     async signup(signupData) {
         const { username, email, password, bio, imageUri } = signupData;
-        const emailInUse = await this.UserModel.findOne({
-            email,
-        });
+        console.log('Données d\'inscription reçues :', signupData);
+        console.log('Vérification de l\'email...');
+        const emailInUse = await this.UserModel.findOne({ email });
         if (emailInUse) {
+            console.log('Erreur : L\'email est déjà utilisé.');
             throw new common_1.BadRequestException('Email already in use');
         }
+        console.log('Création du mot de passe haché...');
         const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.UserModel.create({
-            username,
-            email,
-            password: hashedPassword,
-            bio,
-            imageUri,
-        });
+        console.log('Mot de passe haché :', hashedPassword);
+        try {
+            console.log('Création de l\'utilisateur...');
+            const newUser = await this.UserModel.create({
+                username,
+                email,
+                password: hashedPassword,
+                bio,
+                imageUri,
+            });
+            console.log('Utilisateur créé avec succès :', newUser);
+            return newUser;
+        }
+        catch (error) {
+            console.log('Erreur lors de la création de l\'utilisateur:', error);
+            throw new common_1.InternalServerErrorException('Erreur lors de la création de l\'utilisateur');
+        }
     }
     async login(credentials) {
         const { email, password } = credentials;
+        console.log('Tentative de connexion pour l\'email:', email);
         const user = await this.UserModel.findOne({ email });
         if (!user) {
+            console.log('Erreur : Mauvais identifiants (email non trouvé)');
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
+            console.log('Erreur : Mauvais identifiants (mot de passe incorrect)');
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const tokens = await this.generateUserTokens(user._id);
+        console.log('Tokens générés avec succès :', tokens);
         return Object.assign(Object.assign({}, tokens), { userId: user._id });
     }
     async changePassword(userId, oldPassword, newPassword) {
         const user = await this.UserModel.findById(userId);
         if (!user) {
+            console.log('Erreur : Utilisateur non trouvé');
             throw new common_1.NotFoundException('User not found...');
         }
         const passwordMatch = await bcrypt.compare(oldPassword, user.password);
         if (!passwordMatch) {
+            console.log('Erreur : Mauvais identifiants (ancien mot de passe incorrect)');
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const newHashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = newHashedPassword;
         await user.save();
+        console.log('Mot de passe changé avec succès');
     }
     async forgotPassword(email) {
         const user = await this.UserModel.findOne({ email });
@@ -89,6 +108,7 @@ let AuthService = class AuthService {
                 expiryDate,
             });
             this.mailService.sendPasswordResetEmail(email, resetToken);
+            console.log('Email de réinitialisation envoyé');
         }
         return { message: 'If this user exists, they will receive an email' };
     }
@@ -98,6 +118,7 @@ let AuthService = class AuthService {
             expiryDate: { $gte: new Date() },
         });
         if (!token) {
+            console.log('Erreur : Lien de réinitialisation invalide');
             throw new common_1.UnauthorizedException('Invalid link');
         }
         const user = await this.UserModel.findById(token.userId);
@@ -106,6 +127,7 @@ let AuthService = class AuthService {
         }
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
+        console.log('Mot de passe réinitialisé avec succès');
     }
     async refreshTokens(refreshToken) {
         const token = await this.RefreshTokenModel.findOne({
@@ -113,6 +135,7 @@ let AuthService = class AuthService {
             expiryDate: { $gte: new Date() },
         });
         if (!token) {
+            console.log('Erreur : Token de rafraîchissement invalide');
             throw new common_1.UnauthorizedException('Refresh Token is invalid');
         }
         return this.generateUserTokens(token.userId);
@@ -132,6 +155,7 @@ let AuthService = class AuthService {
         await this.RefreshTokenModel.updateOne({ userId }, { $set: { expiryDate, token } }, {
             upsert: true,
         });
+        console.log('Token de rafraîchissement stocké');
     }
     async getUserPermissions(userId) {
         const user = await this.UserModel.findById(userId);

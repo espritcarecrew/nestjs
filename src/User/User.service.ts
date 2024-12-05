@@ -33,44 +33,68 @@ export class AuthService {
   ) {}
 
   async signup(signupData: SignupDto) {
-    const { username,email, password, bio , imageUri} = signupData;
+    const { username, email, password, bio, imageUri } = signupData;
 
-    //Check if email is in use
-    const emailInUse = await this.UserModel.findOne({
-      email,
-    });
+    // Log des données reçues
+    console.log('Données d\'inscription reçues :', signupData);
+
+    // Vérification de l'email
+    console.log('Vérification de l\'email...');
+    const emailInUse = await this.UserModel.findOne({ email });
     if (emailInUse) {
+      console.log('Erreur : L\'email est déjà utilisé.');
       throw new BadRequestException('Email already in use');
     }
-    //Hash password
+
+    // Hachage du mot de passe
+    console.log('Création du mot de passe haché...');
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user document and save in mongodb
-    return await this.UserModel.create({
-      username,
-      email,
-      password: hashedPassword,
-      bio,
-      imageUri,
-    });
+    // Log du mot de passe haché
+    console.log('Mot de passe haché :', hashedPassword);
+
+    // Création du document utilisateur et enregistrement dans MongoDB
+    try {
+      console.log('Création de l\'utilisateur...');
+      const newUser = await this.UserModel.create({
+        username,
+        email,
+        password: hashedPassword,
+        bio,
+        imageUri,
+      });
+
+      console.log('Utilisateur créé avec succès :', newUser);
+      return newUser;
+    } catch (error) {
+      console.log('Erreur lors de la création de l\'utilisateur:', error);
+      throw new InternalServerErrorException('Erreur lors de la création de l\'utilisateur');
+    }
   }
 
   async login(credentials: LoginDto) {
     const { email, password } = credentials;
-    //Find if user exists by email
+
+    // Log de la tentative de connexion
+    console.log('Tentative de connexion pour l\'email:', email);
+
     const user = await this.UserModel.findOne({ email });
     if (!user) {
+      console.log('Erreur : Mauvais identifiants (email non trouvé)');
       throw new UnauthorizedException('Wrong credentials');
     }
 
-    //Compare entered password with existing password
+    // Vérification du mot de passe
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
+      console.log('Erreur : Mauvais identifiants (mot de passe incorrect)');
       throw new UnauthorizedException('Wrong credentials');
     }
 
-    //Generate JWT tokens
+    // Génération des tokens
     const tokens = await this.generateUserTokens(user._id);
+    console.log('Tokens générés avec succès :', tokens);
+
     return {
       ...tokens,
       userId: user._id,
@@ -78,30 +102,30 @@ export class AuthService {
   }
 
   async changePassword(userId, oldPassword: string, newPassword: string) {
-    //Find the user
     const user = await this.UserModel.findById(userId);
     if (!user) {
+      console.log('Erreur : Utilisateur non trouvé');
       throw new NotFoundException('User not found...');
     }
 
-    //Compare the old password with the password in DB
+    // Comparaison du mot de passe
     const passwordMatch = await bcrypt.compare(oldPassword, user.password);
     if (!passwordMatch) {
+      console.log('Erreur : Mauvais identifiants (ancien mot de passe incorrect)');
       throw new UnauthorizedException('Wrong credentials');
     }
 
-    //Change user's password
+    // Hachage du nouveau mot de passe
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = newHashedPassword;
     await user.save();
+    console.log('Mot de passe changé avec succès');
   }
 
   async forgotPassword(email: string) {
-    //Check that user exists
     const user = await this.UserModel.findOne({ email });
 
     if (user) {
-      //If user exists, generate password reset link
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
 
@@ -111,25 +135,24 @@ export class AuthService {
         userId: user._id,
         expiryDate,
       });
-      //Send the link to the user by email
       this.mailService.sendPasswordResetEmail(email, resetToken);
+      console.log('Email de réinitialisation envoyé');
     }
 
     return { message: 'If this user exists, they will receive an email' };
   }
 
   async resetPassword(newPassword: string, resetToken: string) {
-    //Find a valid reset token document
     const token = await this.ResetTokenModel.findOneAndDelete({
       token: resetToken,
       expiryDate: { $gte: new Date() },
     });
 
     if (!token) {
+      console.log('Erreur : Lien de réinitialisation invalide');
       throw new UnauthorizedException('Invalid link');
     }
 
-    //Change user password (MAKE SURE TO HASH!!)
     const user = await this.UserModel.findById(token.userId);
     if (!user) {
       throw new InternalServerErrorException();
@@ -137,6 +160,7 @@ export class AuthService {
 
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
+    console.log('Mot de passe réinitialisé avec succès');
   }
 
   async refreshTokens(refreshToken: string) {
@@ -146,6 +170,7 @@ export class AuthService {
     });
 
     if (!token) {
+      console.log('Erreur : Token de rafraîchissement invalide');
       throw new UnauthorizedException('Refresh Token is invalid');
     }
     return this.generateUserTokens(token.userId);
@@ -163,7 +188,6 @@ export class AuthService {
   }
 
   async storeRefreshToken(token: string, userId: string) {
-    // Calculate expiry date 3 days from now
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 3);
 
@@ -174,6 +198,7 @@ export class AuthService {
         upsert: true,
       },
     );
+    console.log('Token de rafraîchissement stocké');
   }
 
   async getUserPermissions(userId: string) {

@@ -15,8 +15,6 @@ export class SignupDto {
   @IsString()
   bio: string;
 
-  @IsString()
+  @IsString()  // Accepte n'importe quelle chaîne de caractères pour l'URL de l'image
   imageUri: string;
-
-
 }

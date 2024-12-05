@@ -24,7 +24,7 @@ let MailService = class MailService {
         });
     }
     async sendPasswordResetEmail(to, token) {
-        const resetLink = `http://localhost:3001/reset-password?token=${token}`;
+        const resetLink = `http://yourapp.com/reset-password?token=${token}`;
         const mailOptions = {
             from: 'Auth-backend service',
             to: to,
