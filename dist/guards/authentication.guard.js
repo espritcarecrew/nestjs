@@ -33,12 +33,13 @@ let AuthenticationGuard = class AuthenticationGuard {
         return true;
     }
     extractTokenFromHeader(request) {
-        return request.headers.authorization?.split(' ')[1];
+        var _a;
+        return (_a = request.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
     }
 };
-exports.AuthenticationGuard = AuthenticationGuard;
-exports.AuthenticationGuard = AuthenticationGuard = __decorate([
+AuthenticationGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [jwt_1.JwtService])
 ], AuthenticationGuard);
+exports.AuthenticationGuard = AuthenticationGuard;
 //# sourceMappingURL=authentication.guard.js.map

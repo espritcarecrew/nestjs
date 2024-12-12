@@ -14,7 +14,6 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let ResetToken = class ResetToken extends mongoose_2.Document {
 };
-exports.ResetToken = ResetToken;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -27,8 +26,9 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
 ], ResetToken.prototype, "expiryDate", void 0);
-exports.ResetToken = ResetToken = __decorate([
+ResetToken = __decorate([
     (0, mongoose_1.Schema)({ versionKey: false, timestamps: true })
 ], ResetToken);
+exports.ResetToken = ResetToken;
 exports.ResetTokenSchema = mongoose_1.SchemaFactory.createForClass(ResetToken);
 //# sourceMappingURL=reset-token.schema.js.map

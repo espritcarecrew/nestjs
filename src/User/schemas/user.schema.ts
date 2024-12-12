@@ -15,7 +15,7 @@ export class User extends Document {
   @Prop({ required: true })
   bio: string;  
 
-  @Prop({ required: false })
+  @Prop({ required: true })
   imageUri: string;  
 
   @Prop({ required: false, type: SchemaTypes.ObjectId })

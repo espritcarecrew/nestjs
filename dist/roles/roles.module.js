@@ -14,8 +14,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const role_schema_1 = require("./schemas/role.schema");
 let RolesModule = class RolesModule {
 };
-exports.RolesModule = RolesModule;
-exports.RolesModule = RolesModule = __decorate([
+RolesModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: role_schema_1.Role.name, schema: role_schema_1.RoleSchema }]),
@@ -25,4 +24,5 @@ exports.RolesModule = RolesModule = __decorate([
         exports: [roles_service_1.RolesService],
     })
 ], RolesModule);
+exports.RolesModule = RolesModule;
 //# sourceMappingURL=roles.module.js.map

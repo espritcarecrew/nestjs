@@ -14,7 +14,6 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let User = class User extends mongoose_2.Document {
 };
-exports.User = User;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
@@ -32,15 +31,16 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "bio", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: false }),
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], User.prototype, "imageUri", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: false, type: mongoose_2.SchemaTypes.ObjectId }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], User.prototype, "roleId", void 0);
-exports.User = User = __decorate([
+User = __decorate([
     (0, mongoose_1.Schema)()
 ], User);
+exports.User = User;
 exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 //# sourceMappingURL=user.schema.js.map

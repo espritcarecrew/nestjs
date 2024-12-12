@@ -6,5 +6,5 @@ var Resource;
     Resource["settings"] = "settings";
     Resource["products"] = "products";
     Resource["users"] = "users";
-})(Resource || (exports.Resource = Resource = {}));
+})(Resource = exports.Resource || (exports.Resource = {}));
 //# sourceMappingURL=resource.enum.js.map

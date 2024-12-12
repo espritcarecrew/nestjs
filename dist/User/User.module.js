@@ -14,12 +14,10 @@ const mongoose_1 = require("@nestjs/mongoose");
 const user_schema_1 = require("./schemas/user.schema");
 const refresh_token_schema_1 = require("./schemas/refresh-token.schema");
 const reset_token_schema_1 = require("./schemas/reset-token.schema");
-const mail_service_1 = require("../services/mail.service");
 const roles_module_1 = require("../roles/roles.module");
 let AuthModule = class AuthModule {
 };
-exports.AuthModule = AuthModule;
-exports.AuthModule = AuthModule = __decorate([
+AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
             roles_module_1.RolesModule,
@@ -39,8 +37,9 @@ exports.AuthModule = AuthModule = __decorate([
             ]),
         ],
         controllers: [User_controller_1.AuthController],
-        providers: [User_service_1.AuthService, mail_service_1.MailService],
+        providers: [User_service_1.AuthService],
         exports: [User_service_1.AuthService],
     })
 ], AuthModule);
+exports.AuthModule = AuthModule;
 //# sourceMappingURL=User.module.js.map

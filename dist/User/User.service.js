@@ -21,79 +21,77 @@ const bcrypt = require("bcrypt");
 const jwt_1 = require("@nestjs/jwt");
 const refresh_token_schema_1 = require("./schemas/refresh-token.schema");
 const uuid_1 = require("uuid");
-const nanoid_1 = require("nanoid");
 const reset_token_schema_1 = require("./schemas/reset-token.schema");
-const mail_service_1 = require("../services/mail.service");
 const roles_service_1 = require("../roles/roles.service");
 let AuthService = class AuthService {
-    constructor(UserModel, RefreshTokenModel, ResetTokenModel, jwtService, mailService, rolesService) {
+    constructor(UserModel, RefreshTokenModel, ResetTokenModel, jwtService, rolesService) {
         this.UserModel = UserModel;
         this.RefreshTokenModel = RefreshTokenModel;
         this.ResetTokenModel = ResetTokenModel;
         this.jwtService = jwtService;
-        this.mailService = mailService;
         this.rolesService = rolesService;
+    }
+    async getAllUsers() {
+        return this.UserModel.find().exec();
+    }
+    async findByEmail(email) {
+        return this.UserModel.findOne({ email }).exec();
+    }
+    async findUserByField(field, value) {
+        const query = { [field]: value };
+        const user = await this.UserModel.findOne(query).exec();
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ${field} "${value}" not found`);
+        }
+        return user;
     }
     async signup(signupData) {
         const { username, email, password, bio, imageUri } = signupData;
-        const emailInUse = await this.UserModel.findOne({
-            email,
-        });
+        const emailInUse = await this.UserModel.findOne({ email });
         if (emailInUse) {
             throw new common_1.BadRequestException('Email already in use');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.UserModel.create({
-            username,
-            email,
-            password: hashedPassword,
-            bio,
-            imageUri,
-        });
+        try {
+            const newUser = await this.UserModel.create({
+                username,
+                email,
+                password: hashedPassword,
+                bio,
+                imageUri,
+            });
+            return {
+                success: true,
+                message: 'User created successfully',
+                user: {
+                    username: newUser.username,
+                    email: newUser.email,
+                    bio: newUser.bio,
+                    imageUri: newUser.imageUri,
+                    _id: newUser._id,
+                },
+            };
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Error creating user');
+        }
     }
     async login(credentials) {
         const { email, password } = credentials;
+        console.log('Tentative de connexion pour l\'email:', email);
         const user = await this.UserModel.findOne({ email });
         if (!user) {
+            console.log('Erreur : Mauvais identifiants (email non trouvé)');
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
+            console.log('Erreur : Mauvais identifiants (mot de passe incorrect)');
             throw new common_1.UnauthorizedException('Wrong credentials');
         }
         const tokens = await this.generateUserTokens(user._id);
-        return {
-            ...tokens,
-            userId: user._id,
-        };
-    }
-    async changePassword(userId, oldPassword, newPassword) {
-        const user = await this.UserModel.findById(userId);
-        if (!user) {
-            throw new common_1.NotFoundException('User not found...');
-        }
-        const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!passwordMatch) {
-            throw new common_1.UnauthorizedException('Wrong credentials');
-        }
-        const newHashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = newHashedPassword;
-        await user.save();
-    }
-    async forgotPassword(email) {
-        const user = await this.UserModel.findOne({ email });
-        if (user) {
-            const expiryDate = new Date();
-            expiryDate.setHours(expiryDate.getHours() + 1);
-            const resetToken = (0, nanoid_1.nanoid)(64);
-            await this.ResetTokenModel.create({
-                token: resetToken,
-                userId: user._id,
-                expiryDate,
-            });
-            this.mailService.sendPasswordResetEmail(email, resetToken);
-        }
-        return { message: 'If this user exists, they will receive an email' };
+        console.log('Tokens générés avec succès :', tokens);
+        return Object.assign(Object.assign({}, tokens), { userId: user._id });
     }
     async resetPassword(newPassword, resetToken) {
         const token = await this.ResetTokenModel.findOneAndDelete({
@@ -101,6 +99,7 @@ let AuthService = class AuthService {
             expiryDate: { $gte: new Date() },
         });
         if (!token) {
+            console.log('Erreur : Lien de réinitialisation invalide');
             throw new common_1.UnauthorizedException('Invalid link');
         }
         const user = await this.UserModel.findById(token.userId);
@@ -109,6 +108,7 @@ let AuthService = class AuthService {
         }
         user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
+        console.log('Mot de passe réinitialisé avec succès');
     }
     async refreshTokens(refreshToken) {
         const token = await this.RefreshTokenModel.findOne({
@@ -116,6 +116,7 @@ let AuthService = class AuthService {
             expiryDate: { $gte: new Date() },
         });
         if (!token) {
+            console.log('Erreur : Token de rafraîchissement invalide');
             throw new common_1.UnauthorizedException('Refresh Token is invalid');
         }
         return this.generateUserTokens(token.userId);
@@ -135,6 +136,7 @@ let AuthService = class AuthService {
         await this.RefreshTokenModel.updateOne({ userId }, { $set: { expiryDate, token } }, {
             upsert: true,
         });
+        console.log('Token de rafraîchissement stocké');
     }
     async getUserPermissions(userId) {
         const user = await this.UserModel.findById(userId);
@@ -143,9 +145,42 @@ let AuthService = class AuthService {
         const role = await this.rolesService.getRoleById(user.roleId.toString());
         return role.permissions;
     }
+    async changePassword(changePasswordDto) {
+        const { email, newPassword } = changePasswordDto;
+        const user = await this.UserModel.findOne({ email }).exec();
+        if (!user) {
+            throw new Error('User not found');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+        console.log('tbadil pass');
+        return { message: 'Password changed successfully' };
+    }
+    async updateProfile(email, updateData) {
+        const user = await this.UserModel.findOne({ email }).exec();
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        if (updateData.username)
+            user.username = updateData.username;
+        if (updateData.bio)
+            user.bio = updateData.bio;
+        if (updateData.imageUri)
+            user.imageUri = updateData.imageUri;
+        if (updateData.password) {
+            user.password = await bcrypt.hash(updateData.password, 10);
+        }
+        try {
+            await user.save();
+            return { success: true, message: 'Profile updated successfully', user };
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Error updating profile');
+        }
+    }
 };
-exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __param(1, (0, mongoose_1.InjectModel)(refresh_token_schema_1.RefreshToken.name)),
@@ -154,7 +189,7 @@ exports.AuthService = AuthService = __decorate([
         mongoose_2.Model,
         mongoose_2.Model,
         jwt_1.JwtService,
-        mail_service_1.MailService,
         roles_service_1.RolesService])
 ], AuthService);
+exports.AuthService = AuthService;
 //# sourceMappingURL=User.service.js.map

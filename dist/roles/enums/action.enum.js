@@ -7,5 +7,5 @@ var Action;
     Action["create"] = "create";
     Action["update"] = "update";
     Action["delete"] = "delete";
-})(Action || (exports.Action = Action = {}));
+})(Action = exports.Action || (exports.Action = {}));
 //# sourceMappingURL=action.enum.js.map

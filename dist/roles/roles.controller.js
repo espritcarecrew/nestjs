@@ -24,7 +24,6 @@ let RolesController = class RolesController {
         return this.rolesService.createRole(role);
     }
 };
-exports.RolesController = RolesController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -32,8 +31,9 @@ __decorate([
     __metadata("design:paramtypes", [role_dto_1.CreateRoleDto]),
     __metadata("design:returntype", Promise)
 ], RolesController.prototype, "createRole", null);
-exports.RolesController = RolesController = __decorate([
+RolesController = __decorate([
     (0, common_1.Controller)('roles'),
     __metadata("design:paramtypes", [roles_service_1.RolesService])
 ], RolesController);
+exports.RolesController = RolesController;
 //# sourceMappingURL=roles.controller.js.map

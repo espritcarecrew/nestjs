@@ -13,7 +13,6 @@ exports.ResetPasswordDto = void 0;
 const class_validator_1 = require("class-validator");
 class ResetPasswordDto {
 }
-exports.ResetPasswordDto = ResetPasswordDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -24,4 +23,5 @@ __decorate([
     (0, class_validator_1.Matches)(/^(?=.*[0-9])/, { message: 'Password must contain at least one number' }),
     __metadata("design:type", String)
 ], ResetPasswordDto.prototype, "newPassword", void 0);
+exports.ResetPasswordDto = ResetPasswordDto;
 //# sourceMappingURL=reset-password.dto.js.map

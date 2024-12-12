@@ -16,7 +16,6 @@ const action_enum_1 = require("../enums/action.enum");
 const resource_enum_1 = require("../enums/resource.enum");
 class CreateRoleDto {
 }
-exports.CreateRoleDto = CreateRoleDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -26,9 +25,9 @@ __decorate([
     (0, class_transformer_1.Type)(() => Permission),
     __metadata("design:type", Array)
 ], CreateRoleDto.prototype, "permissions", void 0);
+exports.CreateRoleDto = CreateRoleDto;
 class Permission {
 }
-exports.Permission = Permission;
 __decorate([
     (0, class_validator_1.IsEnum)(resource_enum_1.Resource),
     __metadata("design:type", String)
@@ -38,4 +37,5 @@ __decorate([
     (0, class_validator_1.ArrayUnique)(),
     __metadata("design:type", Array)
 ], Permission.prototype, "actions", void 0);
+exports.Permission = Permission;
 //# sourceMappingURL=role.dto.js.map

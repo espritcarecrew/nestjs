@@ -28,10 +28,10 @@ let RolesService = class RolesService {
         return this.RoleModel.findById(roleId);
     }
 };
-exports.RolesService = RolesService;
-exports.RolesService = RolesService = __decorate([
+RolesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(role_schema_1.Role.name)),
     __metadata("design:paramtypes", [mongoose_2.Model])
 ], RolesService);
+exports.RolesService = RolesService;
 //# sourceMappingURL=roles.service.js.map
