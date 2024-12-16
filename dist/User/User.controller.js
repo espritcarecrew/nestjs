@@ -18,10 +18,9 @@ const signup_dto_1 = require("./dtos/signup.dto");
 const login_dto_1 = require("./dtos/login.dto");
 const refresh_tokens_dto_1 = require("./dtos/refresh-tokens.dto");
 const change_password_dto_1 = require("./dtos/change-password.dto");
-const authentication_guard_1 = require("../guards/authentication.guard");
-const forgot_password_dto_1 = require("./dtos/forgot-password.dto");
 const reset_password_dto_1 = require("./dtos/reset-password.dto");
 const User_service_1 = require("./User.service");
+const UpdateProfileDto_dto_1 = require("./dtos/UpdateProfileDto.dto");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -35,14 +34,25 @@ let AuthController = class AuthController {
     async refreshTokens(refreshTokenDto) {
         return this.authService.refreshTokens(refreshTokenDto.refreshToken);
     }
-    async changePassword(changePasswordDto, req) {
-        return this.authService.changePassword(req.userId, changePasswordDto.oldPassword, changePasswordDto.newPassword);
-    }
-    async forgotPassword(forgotPasswordDto) {
-        return this.authService.forgotPassword(forgotPasswordDto.email);
-    }
     async resetPassword(resetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto.newPassword, resetPasswordDto.resetToken);
+    }
+    async getAllUsers() {
+        return this.authService.getAllUsers();
+    }
+    async findUser(field, value) {
+        console.log(`Received query: field=${field}, value=${value}`);
+        if (!field || !value) {
+            throw new Error('Both "field" and "value" query parameters are required');
+        }
+        return this.authService.findUserByField(field, value);
+    }
+    async changePassword(changePasswordDto) {
+        return this.authService.changePassword(changePasswordDto);
+    }
+    async updateProfile(updateData) {
+        const { email, username, bio } = updateData;
+        return await this.authService.updateProfile(email, { username, bio });
     }
 };
 __decorate([
@@ -67,28 +77,40 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refreshTokens", null);
 __decorate([
-    (0, common_1.UseGuards)(authentication_guard_1.AuthenticationGuard),
-    (0, common_1.Put)('change-password'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [change_password_dto_1.ChangePasswordDto, Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "changePassword", null);
-__decorate([
-    (0, common_1.Post)('forgot-password'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [forgot_password_dto_1.ForgotPasswordDto]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "forgotPassword", null);
-__decorate([
     (0, common_1.Put)('reset-password'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [reset_password_dto_1.ResetPasswordDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
+__decorate([
+    (0, common_1.Get)('users'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getAllUsers", null);
+__decorate([
+    (0, common_1.Get)('find'),
+    __param(0, (0, common_1.Query)('field')),
+    __param(1, (0, common_1.Query)('value')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "findUser", null);
+__decorate([
+    (0, common_1.Put)('change-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [change_password_dto_1.ChangePasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Put)('update-profile'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [UpdateProfileDto_dto_1.UpdateProfileDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updateProfile", null);
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [User_service_1.AuthService])

@@ -1,11 +1,10 @@
-import { IsString, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class ChangePasswordDto {
-  @IsString()
-  oldPassword: string;
+  @IsEmail()
+  email: string;  // Ensure email is a valid string and an email format
 
   @IsString()
-  @MinLength(6)
-  @Matches(/^(?=.*[0-9])/, { message: 'Password must contain at least one number' })
-  newPassword: string;
+  @MinLength(6, { message: 'Password is too short. Minimum length is 6 characters.' })
+  newPassword: string; // Make sure the password is a string and meets length requirements
 }

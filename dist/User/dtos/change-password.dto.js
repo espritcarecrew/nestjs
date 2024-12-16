@@ -14,13 +14,12 @@ const class_validator_1 = require("class-validator");
 class ChangePasswordDto {
 }
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
-], ChangePasswordDto.prototype, "oldPassword", void 0);
+], ChangePasswordDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(6),
-    (0, class_validator_1.Matches)(/^(?=.*[0-9])/, { message: 'Password must contain at least one number' }),
+    (0, class_validator_1.MinLength)(6, { message: 'Password is too short. Minimum length is 6 characters.' }),
     __metadata("design:type", String)
 ], ChangePasswordDto.prototype, "newPassword", void 0);
 exports.ChangePasswordDto = ChangePasswordDto;

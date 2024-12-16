@@ -31,10 +31,9 @@ const category_module_1 = require("./category/category.module");
 const consultation_schedule_service_1 = require("./consultation-schedule/consultation-schedule.service");
 const appointment_service_1 = require("./appointment/appointment.service");
 const appointment_module_1 = require("./appointment/appointment.module");
-const prediction_service_1 = require("./prediction/prediction.service");
-const prediction_controller_1 = require("./prediction/prediction.controller");
-const prediction_module_1 = require("./prediction/prediction.module");
 const config_2 = require("./config/config");
+const mailer_module_1 = require("./mailer/mailer.module");
+const gemini_module_1 = require("./gemini/gemini.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -68,11 +67,12 @@ AppModule = __decorate([
             category_module_1.CategoryModule,
             doctor_module_1.DoctorModule,
             consultation_schedule_module_1.ConsultationScheduleModule,
+            mailer_module_1.MailerModule,
             appointment_module_1.AppointmentModule,
-            prediction_module_1.PredictionModule,
+            gemini_module_1.GeminiModule,
         ],
-        controllers: [app_controller_1.AppController, checklist_controller_1.ChecklistController, doctor_controller_1.DoctorController, category_controller_1.CategoryController, consultation_schedule_controller_1.ConsultationScheduleController, prediction_controller_1.PredictionController],
-        providers: [app_service_1.AppService, checklist_service_1.ChecklistService, doctor_service_1.DoctorService, category_service_1.CategoryService, consultation_schedule_service_1.ConsultationScheduleService, appointment_service_1.AppointmentService, prediction_service_1.PredictionService],
+        controllers: [app_controller_1.AppController, checklist_controller_1.ChecklistController, doctor_controller_1.DoctorController, category_controller_1.CategoryController, consultation_schedule_controller_1.ConsultationScheduleController],
+        providers: [app_service_1.AppService, checklist_service_1.ChecklistService, doctor_service_1.DoctorService, category_service_1.CategoryService, consultation_schedule_service_1.ConsultationScheduleService, appointment_service_1.AppointmentService],
     })
 ], AppModule);
 exports.AppModule = AppModule;

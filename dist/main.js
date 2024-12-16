@@ -2,15 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
-const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 async function bootstrap() {
     var _a;
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.useGlobalPipes(new common_1.ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-    }));
+    app.use((req, res, next) => {
+        console.log(`[Incoming Request] ${req.method} ${req.url}`);
+        next();
+    });
+    console.log('Application running on http://localhost:3000');
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Cats example')
         .setDescription('The cats API description')

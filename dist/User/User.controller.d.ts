@@ -28,16 +28,22 @@ import { SignupDto } from './dtos/signup.dto';
 import { LoginDto } from './dtos/login.dto';
 import { RefreshTokenDto } from './dtos/refresh-tokens.dto';
 import { ChangePasswordDto } from './dtos/change-password.dto';
-import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { AuthService } from './User.service';
+import { UpdateProfileDto } from './dtos/UpdateProfileDto.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    signUp(signupData: SignupDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/user.schema").User> & import("./schemas/user.schema").User & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
+    signUp(signupData: SignupDto): Promise<{
+        success: boolean;
+        message: string;
+        user: {
+            username: string;
+            email: string;
+            bio: string;
+            imageUri: string;
+            _id: unknown;
+        };
     }>;
     login(credentials: LoginDto): Promise<{
         userId: unknown;
@@ -48,9 +54,13 @@ export declare class AuthController {
         accessToken: string;
         refreshToken: any;
     }>;
-    changePassword(changePasswordDto: ChangePasswordDto, req: any): Promise<void>;
-    forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{
-        message: string;
-    }>;
     resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void>;
+    getAllUsers(): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/user.schema").User> & import("./schemas/user.schema").User & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    findUser(field: string, value: string): Promise<import("./schemas/user.schema").User>;
+    changePassword(changePasswordDto: ChangePasswordDto): Promise<any>;
+    updateProfile(updateData: UpdateProfileDto): Promise<any>;
 }

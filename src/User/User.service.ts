@@ -16,8 +16,9 @@ import { RefreshToken } from './schemas/refresh-token.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { ResetToken } from './schemas/reset-token.schema';
-import { MailService } from 'src/services/mail.service';
 import { RolesService } from 'src/roles/roles.service';
+import { ChangePasswordDto } from './dtos/change-password.dto';
+import { UpdateProfileDto } from './dtos/UpdateProfileDto.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,49 +29,62 @@ export class AuthService {
     @InjectModel(ResetToken.name)
     private ResetTokenModel: Model<ResetToken>,
     private jwtService: JwtService,
-    private mailService: MailService,
     private rolesService: RolesService,
   ) {}
-
-  async signup(signupData: SignupDto) {
-    const { username, email, password, bio, imageUri } = signupData;
-
-    // Log des données reçues
-    console.log('Données d\'inscription reçues :', signupData);
-
-    // Vérification de l'email
-    console.log('Vérification de l\'email...');
-    const emailInUse = await this.UserModel.findOne({ email });
-    if (emailInUse) {
-      console.log('Erreur : L\'email est déjà utilisé.');
-      throw new BadRequestException('Email already in use');
-    }
-
-    // Hachage du mot de passe
-    console.log('Création du mot de passe haché...');
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Log du mot de passe haché
-    console.log('Mot de passe haché :', hashedPassword);
-
-    // Création du document utilisateur et enregistrement dans MongoDB
-    try {
-      console.log('Création de l\'utilisateur...');
-      const newUser = await this.UserModel.create({
-        username,
-        email,
-        password: hashedPassword,
-        bio,
-        imageUri,
-      });
-
-      console.log('Utilisateur créé avec succès :', newUser);
-      return newUser;
-    } catch (error) {
-      console.log('Erreur lors de la création de l\'utilisateur:', error);
-      throw new InternalServerErrorException('Erreur lors de la création de l\'utilisateur');
-    }
+  async getAllUsers() {
+    return this.UserModel.find().exec();
+}
+  // Define the findByEmail method in UserService
+  async findByEmail(email: string): Promise<User | null> {
+    return this.UserModel.findOne({ email }).exec(); // Use Mongoose findOne to find user by email
   }
+async findUserByField(field: string, value: string): Promise<User> {
+  const query = { [field]: value };
+  const user = await this.UserModel.findOne(query).exec();
+
+  if (!user) {
+    throw new NotFoundException(`User with ${field} "${value}" not found`);
+  }
+
+  return user;
+}
+
+
+async signup(signupData: SignupDto) {
+  const { username, email, password, bio, imageUri } = signupData;
+
+  const emailInUse = await this.UserModel.findOne({ email });
+  if (emailInUse) {
+    throw new BadRequestException('Email already in use');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const newUser = await this.UserModel.create({
+      username,
+      email,
+      password: hashedPassword,
+      bio,
+      imageUri,
+    });
+
+    return {
+      success: true,
+      message: 'User created successfully',
+      user: {
+        username: newUser.username,
+        email: newUser.email,
+        bio: newUser.bio,
+        imageUri: newUser.imageUri,
+        _id: newUser._id,
+      },
+    };
+  } catch (error) {
+    throw new InternalServerErrorException('Error creating user');
+  }
+}
+
 
   async login(credentials: LoginDto) {
     const { email, password } = credentials;
@@ -100,48 +114,6 @@ export class AuthService {
       userId: user._id,
     };
   }
-
-  async changePassword(userId, oldPassword: string, newPassword: string) {
-    const user = await this.UserModel.findById(userId);
-    if (!user) {
-      console.log('Erreur : Utilisateur non trouvé');
-      throw new NotFoundException('User not found...');
-    }
-
-    // Comparaison du mot de passe
-    const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!passwordMatch) {
-      console.log('Erreur : Mauvais identifiants (ancien mot de passe incorrect)');
-      throw new UnauthorizedException('Wrong credentials');
-    }
-
-    // Hachage du nouveau mot de passe
-    const newHashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = newHashedPassword;
-    await user.save();
-    console.log('Mot de passe changé avec succès');
-  }
-
-  async forgotPassword(email: string) {
-    const user = await this.UserModel.findOne({ email });
-
-    if (user) {
-      const expiryDate = new Date();
-      expiryDate.setHours(expiryDate.getHours() + 1);
-
-      const resetToken = nanoid(64);
-      await this.ResetTokenModel.create({
-        token: resetToken,
-        userId: user._id,
-        expiryDate,
-      });
-      this.mailService.sendPasswordResetEmail(email, resetToken);
-      console.log('Email de réinitialisation envoyé');
-    }
-
-    return { message: 'If this user exists, they will receive an email' };
-  }
-
   async resetPassword(newPassword: string, resetToken: string) {
     const token = await this.ResetTokenModel.findOneAndDelete({
       token: resetToken,
@@ -208,5 +180,53 @@ export class AuthService {
 
     const role = await this.rolesService.getRoleById(user.roleId.toString());
     return role.permissions;
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto): Promise<any> {
+    const { email, newPassword } = changePasswordDto;
+
+    // Find the user by email
+    const user = await this.UserModel.findOne({ email }).exec(); // Directly query using findOne
+
+    if (!user) {
+      throw new Error('User not found'); // Or throw a specific HTTP exception
+      
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    user.password = hashedPassword;
+
+    // Save the updated user record
+    await user.save();
+    console.log('tbadil pass');
+
+    return { message: 'Password changed successfully' };
+  }
+  async updateProfile(email: string, updateData: any): Promise<any> {
+    // Find the user by email
+    const user = await this.UserModel.findOne({ email }).exec();
+    
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Update user fields based on the input
+    if (updateData.username) user.username = updateData.username;
+    if (updateData.bio) user.bio = updateData.bio;
+    if (updateData.imageUri) user.imageUri = updateData.imageUri;
+
+    if (updateData.password) {
+      // If password is being updated, hash it
+      user.password = await bcrypt.hash(updateData.password, 10);
+    }
+    try {
+      await user.save();  // Save the updated user
+      return { success: true, message: 'Profile updated successfully', user };
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating profile');
+    }
   }
 }

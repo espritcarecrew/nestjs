@@ -22,12 +22,12 @@ import { CategoryModule } from './category/category.module';
 import { ConsultationScheduleService } from './consultation-schedule/consultation-schedule.service';
 import { AppointmentService } from './appointment/appointment.service';
 import { AppointmentModule } from './appointment/appointment.module';
-import { PredictionService } from './prediction/prediction.service';
-import { PredictionController } from './prediction/prediction.controller';
-import { PredictionModule } from './prediction/prediction.module';
 import config from './config/config';
+import { MailerModule } from './mailer/mailer.module';
+import { GeminiModule } from './gemini/gemini.module';
 
 @Module({
+  
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -57,10 +57,13 @@ import config from './config/config';
     CategoryModule,
     DoctorModule,
     ConsultationScheduleModule,
+    MailerModule,
     AppointmentModule,
-    PredictionModule,
+    GeminiModule,
+    
+    
   ],
-  controllers: [AppController, ChecklistController, DoctorController, CategoryController, ConsultationScheduleController, PredictionController],
-  providers: [AppService, ChecklistService, DoctorService, CategoryService, ConsultationScheduleService, AppointmentService, PredictionService],
+  controllers: [AppController, ChecklistController, DoctorController, CategoryController, ConsultationScheduleController],
+  providers: [AppService, ChecklistService, DoctorService, CategoryService, ConsultationScheduleService, AppointmentService],
 })
 export class AppModule {}
