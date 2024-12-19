@@ -25,6 +25,9 @@ import { AppointmentModule } from './appointment/appointment.module';
 import config from './config/config';
 import { MailerModule } from './mailer/mailer.module';
 import { GeminiModule } from './gemini/gemini.module';
+import { MoodModule } from './mood/mood.module';
+import { PredictionModule } from './prediction/prediction.module';
+import { VaccinationModule } from './vaccination/vaccination.module';
 
 @Module({
   
@@ -59,8 +62,10 @@ import { GeminiModule } from './gemini/gemini.module';
     ConsultationScheduleModule,
     MailerModule,
     AppointmentModule,
+    MoodModule,
     GeminiModule,
-    
+    PredictionModule,
+    VaccinationModule,
     
   ],
   controllers: [AppController, ChecklistController, DoctorController, CategoryController, ConsultationScheduleController],

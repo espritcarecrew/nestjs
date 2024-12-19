@@ -1,11 +1,11 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { HttpService } from "@nestjs/axios";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
-  private readonly apiKey = 'AIzaSyBKs8Yrr1IVA2mPRuvr042cG4_09dyhssg';
+  private readonly apiKey = 'AIzaSyBz1o2pDEayG6UnYhhCZA7IT2H3NB-gdHw';
   private readonly apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
   constructor(private readonly httpService: HttpService) {}
@@ -13,7 +13,34 @@ export class GeminiService {
   async generateContent(data: any): Promise<any> {
     this.logger.log('Received data for API call:', data);
 
-    // Update the payload to match the expected format
+    // Check if the question is pregnancy-related
+    if (!this.isPregnancyRelated(data.prompt)) {
+      this.logger.warn('Unrelated question detected. Returning fallback response.');
+      return {
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  text: "cannot answer that question \n",
+                },
+              ],
+              role: "model",
+            },
+            finishReason: "STOP",
+            avgLogprobs: -0.00038474539972164416,
+          },
+        ],
+        usageMetadata: {
+          promptTokenCount: 1,
+          candidatesTokenCount: 11,
+          totalTokenCount: 12,
+        },
+        modelVersion: "gemini-1.5-flash-latest",
+      };
+    }
+
+    // Prepare the request payload
     const requestData = {
       contents: [
         {
@@ -42,5 +69,27 @@ export class GeminiService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  /**
+   * Determines if the prompt is pregnancy-related.
+   * Returns true if it is, false otherwise.
+   */
+  private isPregnancyRelated(prompt: string): boolean {
+    const pregnancyKeywords = [
+      'pregnancy',
+      'pregnant',
+      'baby',
+      'childbirth',
+      'labor',
+      'postpartum',
+      'maternity',
+      'prenatal',
+      'conception',
+      'newborn',
+    ];
+
+    const lowercasePrompt = prompt.toLowerCase();
+    return pregnancyKeywords.some((keyword) => lowercasePrompt.includes(keyword));
   }
 }

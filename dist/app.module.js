@@ -34,6 +34,9 @@ const appointment_module_1 = require("./appointment/appointment.module");
 const config_2 = require("./config/config");
 const mailer_module_1 = require("./mailer/mailer.module");
 const gemini_module_1 = require("./gemini/gemini.module");
+const mood_module_1 = require("./mood/mood.module");
+const prediction_module_1 = require("./prediction/prediction.module");
+const vaccination_module_1 = require("./vaccination/vaccination.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -69,7 +72,10 @@ AppModule = __decorate([
             consultation_schedule_module_1.ConsultationScheduleModule,
             mailer_module_1.MailerModule,
             appointment_module_1.AppointmentModule,
+            mood_module_1.MoodModule,
             gemini_module_1.GeminiModule,
+            prediction_module_1.PredictionModule,
+            vaccination_module_1.VaccinationModule,
         ],
         controllers: [app_controller_1.AppController, checklist_controller_1.ChecklistController, doctor_controller_1.DoctorController, category_controller_1.CategoryController, consultation_schedule_controller_1.ConsultationScheduleController],
         providers: [app_service_1.AppService, checklist_service_1.ChecklistService, doctor_service_1.DoctorService, category_service_1.CategoryService, consultation_schedule_service_1.ConsultationScheduleService, appointment_service_1.AppointmentService],
